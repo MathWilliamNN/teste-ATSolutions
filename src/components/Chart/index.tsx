@@ -19,10 +19,11 @@ const LineChart = () => {
         return null;
     }
 
-    const { APIData } = context
+    const { APIData, setInputDialogStatus } = context
+    
 
     const ToggleDataUpload = () => {
-        console.log('Data upload')
+        setInputDialogStatus(true);
     }
 
     const labels = APIData.map(item => {
@@ -82,13 +83,13 @@ const LineChart = () => {
     }
 
     return (
-        <Box sx={{ width: '80%', maxHeight: '50%', margin: '64px' }} >
+        <Box sx={{ width: '75%', margin: '64px' }} >
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ paddingBottom: '12px' }} >
+                <Typography variant="h5" >
                     Frameworks Javascript
                 </Typography>
                 <Button>
-                    <IoMdAdd size={25} onClick={ToggleDataUpload} />
+                    <IoMdAdd size={30} onClick={ToggleDataUpload} />
                 </Button>
             </Toolbar>
             <Line data={chartData} options={chartOptions} />

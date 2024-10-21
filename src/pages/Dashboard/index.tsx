@@ -1,10 +1,7 @@
-import {
-  Box,
-  //  Typography 
-} from '@mui/material'
+import { Box} from '@mui/material'
 
 import Chart from "../../components/Chart"
-// import FetchTest from '../../components/FetchTest'
+import InputDialog from '../../components/InputDialog'
 
 const Dashboard = () => {
   return (
@@ -18,6 +15,7 @@ const Dashboard = () => {
       }}
     >
       <Chart />
+      <InputDialog/>
     </Box>
   )
 }

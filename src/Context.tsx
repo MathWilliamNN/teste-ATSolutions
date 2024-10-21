@@ -15,19 +15,22 @@ interface StatusContextType {
     setHambMenuStatus: React.Dispatch<React.SetStateAction<boolean>>;
     APIData: Framework[];
     setAPIData: React.Dispatch<React.SetStateAction<Framework[]>>;
+    inputDialogStatus: boolean;
+    setInputDialogStatus: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-export const StatusContext = createContext<StatusContextType | undefined>(undefined);
 
 interface StatusProviderProps {
     children: ReactNode;
 }
+
+export const StatusContext = createContext<StatusContextType | undefined>(undefined);
 
 export const StatusProvider: FC<StatusProviderProps> = ({ children }) => {
 
     const [HambMenuStatus, setHambMenuStatus] = useState<boolean>(false);
     const [APIData, setAPIData] = useState<Framework[]>([]);;
     const [error, setError] = useState(null);
+    const [inputDialogStatus, setInputDialogStatus] = useState<boolean>(false);
     
     useEffect(() => {
         fetch('http://localhost:3001/frameworks')
@@ -50,7 +53,7 @@ export const StatusProvider: FC<StatusProviderProps> = ({ children }) => {
     }
 
     return (
-        <StatusContext.Provider value={{ HambMenuStatus, setHambMenuStatus, APIData, setAPIData}}>
+        <StatusContext.Provider value={{ HambMenuStatus, setHambMenuStatus, APIData, setAPIData, inputDialogStatus, setInputDialogStatus}}>
             {children}
         </StatusContext.Provider>
     );
