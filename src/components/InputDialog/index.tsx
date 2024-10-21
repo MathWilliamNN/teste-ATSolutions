@@ -2,6 +2,14 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import { useContext, useState } from "react";
 import { StatusContext } from "../../Context";
 
+interface Framework {
+    id: string;
+    timestamp: string;
+    angular: number;
+    react: number;
+    vue: number;
+}
+
 const InputDialog = () => {
 
     const context = useContext(StatusContext);
@@ -20,6 +28,57 @@ const InputDialog = () => {
     const closeDialog = () => {
         setInputDialogStatus(false);
     };
+
+    const PostData = (postingData: Framework) => {
+        fetch('http://localhost:3001/frameworks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postingData),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar os dados');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log('Dados enviados com sucesso:', data);
+            })
+            .catch((error) => {
+                console.error('Erro ao enviar os dados:', error);
+            });
+    }
+
+
+    const PatchData = (patchingDataId: string) => {
+
+        fetch(`http://localhost:3001/frameworks/${patchingDataId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                angular: angularValue,
+                react: reactValue,
+                vue: vueValue
+            }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Erro ao atualizar os dados');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log('Dados atualizados com sucesso:', data);
+            })
+            .catch((error) => {
+                console.error('Erro ao atualizar os dados:', error);
+            });
+
+    }
 
     const UploadData = () => {
 
@@ -45,6 +104,8 @@ const InputDialog = () => {
                 };
 
                 console.log('Registro atualizado:', updatedAPIData[existingRecordIndex]);
+                PatchData(updatedAPIData[existingRecordIndex].id);
+
                 return updatedAPIData;
             } else {
                 console.log('data nao existente');
@@ -59,10 +120,14 @@ const InputDialog = () => {
                 };
 
                 console.log('Novo registro:', newRegister);
+                PostData(newRegister);
 
                 // Adicionando o novo registro à lista e ordenando com base na data (mes-ano)
                 const newData = [...prevAPIData, newRegister];
-                return newData.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+                const sortedData = newData.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+
+                return sortedData;
             }
         });
 
