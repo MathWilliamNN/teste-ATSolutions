@@ -8,8 +8,16 @@ import { StatusContext } from "../../Context";
 
 const Header: React.FC = () => {
 
-    const { setHambMenuStatus } = useContext(StatusContext) || { setHambMenuStatus: () => {} };
+    const context = useContext(StatusContext);
 
+    // garantir que haja retorno do contexto
+    if (!context) {
+        return null;
+    }
+
+    const { setHambMenuStatus } = context;
+
+    // função para abrir e fechar o menu hamburguer quando clicado no seu ícone 
     const toggleHambMenu = () => {
         setHambMenuStatus((prev: boolean) => !prev); 
     };

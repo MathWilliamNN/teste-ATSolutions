@@ -10,6 +10,7 @@ const HambMenu = () => {
 
     const context = useContext(StatusContext);
 
+    // garantir que haja retorno do contexto
     if (!context) {
         return null;
     }
@@ -20,11 +21,12 @@ const HambMenu = () => {
         <>
             <Drawer
                 anchor="left"
-                open={HambMenuStatus}
-                onClose={() => setHambMenuStatus(false)}
+                open={HambMenuStatus} // abre de acordo com o valor da variável colocada no context
+                onClose={() => setHambMenuStatus(false)} // fecha quando clicar fora da janela
             >
                 <div style={{ width: 250 }}>
                     <List>
+                        {/* formatação e funcionalidade dos itens da lista (cor, e página destino), também função para fechar o menu quando clicado */}
                         <ListItem component={Link} to="/" onClick={() => setHambMenuStatus(false)} sx={{color: '#4F4F4F', textDecoration: 'none'}}>
                             <FaHome size={20} />
                             <ListItemText primary="Início" sx={{ paddingLeft: '12px' }} />

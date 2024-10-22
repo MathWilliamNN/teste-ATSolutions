@@ -14,21 +14,25 @@ const InputDialog = () => {
 
     const context = useContext(StatusContext);
 
+    // garantir que haja retorno do contexto
     if (!context) {
         return null;
     }
 
     const { inputDialogStatus, setInputDialogStatus, setAPIData } = context;
 
+    // variáveis que serão utilizadas no preenchimento do formulário
     const [reactValue, setReactValue] = useState<number>(0);
     const [angularValue, setAngularValue] = useState<number>(0);
     const [vueValue, setVueValue] = useState<number>(0);
     const [dateValue, setDateValue] = useState<string>('');
 
+    // função para fechar a janela de input de dados
     const closeDialog = () => {
         setInputDialogStatus(false);
     };
 
+    // função para realizar a requisição POST quando o form é enviado
     const PostData = (postingData: Framework) => {
         fetch('http://localhost:3001/frameworks', {
             method: 'POST',
@@ -51,7 +55,7 @@ const InputDialog = () => {
             });
     }
 
-
+    // função para fazer a requisição PATCH caso a data inserida já exista nos dados
     const PatchData = (patchingDataId: string) => {
 
         fetch(`http://localhost:3001/frameworks/${patchingDataId}`, {
@@ -62,7 +66,8 @@ const InputDialog = () => {
             body: JSON.stringify({
                 angular: angularValue,
                 react: reactValue,
-                vue: vueValue
+                vue: vueValue,
+                // timestamp: dataValue
             }),
         })
             .then((response) => {
@@ -82,35 +87,43 @@ const InputDialog = () => {
 
     const UploadData = () => {
 
-        // Verificar se a data já existe (verificando apenas mês/ano)
         const inputDate = new Date(dateValue);
-        const inputMonthYear = `${inputDate.getFullYear()}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}`;
-
+        
+        //formata a data inserida para YYYY-MM-DD
+        const inputMonthYearDay = `${inputDate.getFullYear()}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getDate().toString().padStart(2, '0')}`;
+        
+        //Função que verifica se a data inserida já existe no array APIData, que contém os dados do servidor, recebidos no context
         setAPIData((prevAPIData) => {
             const existingRecordIndex = prevAPIData.findIndex(record => {
                 const recordDate = new Date(record.timestamp);
-                const recordMonthYear = `${recordDate.getFullYear()}-${(recordDate.getMonth() + 1).toString().padStart(2, '0')}`;
-                return recordMonthYear === inputMonthYear;
+                const recordMonthYearDay = `${recordDate.getFullYear()}-${(recordDate.getMonth() + 1).toString().padStart(2, '0')}-${recordDate.getDate().toString().padStart(2, '0')}`;
+                return recordMonthYearDay === inputMonthYearDay;
             });
 
+
             if (existingRecordIndex !== -1) {
-                console.log('data existente');
+                //caso a data exista, substitui os valores contidos nela
                 const updatedAPIData = [...prevAPIData];
                 updatedAPIData[existingRecordIndex] = {
                     ...updatedAPIData[existingRecordIndex],
                     angular: angularValue,
                     react: reactValue,
-                    vue: vueValue
+                    vue: vueValue,
+                    timestamp: dateValue
                 };
 
-                console.log('Registro atualizado:', updatedAPIData[existingRecordIndex]);
+                // chama a função patch para realizar a requisição para o servidor
                 PatchData(updatedAPIData[existingRecordIndex].id);
 
                 return updatedAPIData;
+
             } else {
-                console.log('data nao existente');
+                // caso a data seja nova, realiza a inserção do dado completo
+
+                // gera um novo id incremental para o novo elemento
                 const newId = (prevAPIData.length + 1).toString();
 
+                // recebe os dados dos gráficos e coloca no objeto newRegister
                 const newRegister = {
                     id: newId,
                     timestamp: dateValue,
@@ -119,11 +132,13 @@ const InputDialog = () => {
                     vue: vueValue
                 };
 
-                console.log('Novo registro:', newRegister);
+                // realiza a requisição POST do novo dado, ao final da lista
                 PostData(newRegister);
 
-                // Adicionando o novo registro à lista e ordenando com base na data (mes-ano)
+                // insere o registro novo no final do array APIData
                 const newData = [...prevAPIData, newRegister];
+
+                // organiza o array em ordem cronológica, garantindo que o último input seja colocado na ordem
                 const sortedData = newData.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
 
@@ -131,6 +146,7 @@ const InputDialog = () => {
             }
         });
 
+        //Fecha a caixa de diálogo após resolver o que for necessário
         closeDialog();
     };
 
@@ -148,8 +164,8 @@ const InputDialog = () => {
                     <TextField type="date" label='Data' sx={{ width: '30%' }} InputLabelProps={{ shrink: true }} onChange={(e) => setDateValue(e.target.value)}></TextField>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={closeDialog}>Cancel</Button>
-                    <Button onClick={UploadData}>Submit</Button>
+                    <Button sx={{backgroundColor: '#1976D2', color: 'black'}} onClick={closeDialog}>Cancel</Button>
+                    <Button sx={{backgroundColor: '#1976D2', color: 'black'}} onClick={UploadData}>Submit</Button>
                 </DialogActions>
             </Dialog>
         </Box>
